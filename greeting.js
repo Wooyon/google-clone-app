@@ -1,9 +1,25 @@
 const form = document.querySelector(".js-form"),
   input = form.querySelector("input"),
-  greetings = document.querySelector(".js-greetings");
+  greetings = document.querySelector("h4");
 
 const USER_LS = "currentUser",
   SHOWING_CN = "showing";
+
+function saveName(text) {
+  localStorage.setItem(USER_LS, text);
+} //좌는 key, 우는 value를 저장한다.
+
+function handleSubmit(event) {
+  event.preventDefault(); //submit하고 초기화되는 것을막아줌
+  const currentValue = input.value;
+  paintGreeting(currentValue);
+  saveName(currentValue);
+}
+
+function askForName() {
+  form.classList.add(SHOWING_CN);
+  form.addEventListener("submit", handleSubmit);
+}
 
 function paintGreeting(text) {
   form.classList.remove(SHOWING_CN);
@@ -14,11 +30,14 @@ function paintGreeting(text) {
 function loadName() {
   const currentUser = localStorage.getItem(USER_LS);
   if (currentUser === null) {
+    askForName();
   } else {
     paintGreeting(currentUser);
   }
 }
+
 function init() {
   loadName();
 }
+
 init();
