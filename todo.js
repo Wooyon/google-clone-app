@@ -4,7 +4,18 @@ const toDoForm = document.querySelector(".js-toDoForm"),
 
 const TODOS_LS = "toDos";
 
-const toDos = [];
+let toDos = [];
+
+function deleteToDo(event) {
+  const btn = event.target;
+  const li = btn.parentNode;
+  toDoList.removeChild(li); //toDoList가 부모고 그 아이를 죽이는 것.
+  const cleanToDos = toDos.filter(function(toDo) {
+    return toDo.id !== parseInt(li.id); //선택된 것을 제외한 다른 것들의 아이디를 반환해라
+  }); //filter도 forEach와 같이 함수의 각각의 요소를 실행시킴
+  toDos = cleanToDos;
+  saveToDos(); //기존에는 지워지지 않고 입력된 toDos 배열을 deleteToDo함수를 통해 변경된 사항들을 다시 저장해놓는다.
+}
 
 function saveToDos() {
   localStorage.setItem(TODOS_LS, JSON.stringify(toDos)); //JSON.stringify는 js object string로 저장되게 만든다.
@@ -16,11 +27,12 @@ function paintToDo(text) {
   const span = document.createElement("span");
   const newId = toDos.length + 1;
   delBtn.innerText = "X";
+  delBtn.addEventListener("click", deleteToDo);
   span.innerText = text;
   li.appendChild(delBtn);
   li.appendChild(span); // father element안에 넣어주기.
-  li.id = newId;
   toDoList.appendChild(li);
+  li.id = newId;
   const toDoObj = {
     text: text,
     id: newId
@@ -41,7 +53,8 @@ function loadToDos() {
   if (loadedToDos !== null) {
     const parsedToDos = JSON.parse(loadedToDos);
     parsedToDos.forEach(function(toDo) {
-      paintToDo(toDo.text);
+      //호출된 함수내의 각각을 toDo라고 부를거다라는 뜻
+      paintToDo(toDo.text); //위의 함수에서 array toDo에 입력된 값이 로컬스토리지에 저장되면서 저장된 모든 것들을 매회마다 불러오는 기능을 한다.
     }); //forEach()는 기본적으로 함수를 실행, array에 담겨있는 것들 각각에 한번씩 함수를 실행시켜준다.
   }
 }
